@@ -16,7 +16,11 @@ class Fun(commands.Cog):
 
     def owner_only():
         def is_owner(ctx):
-            return ctx.author.id == 379768557556203550
+            owners = []
+            with open("owners.txt") as file:
+                for i in file.readlines():
+                    owners.append(int(i))
+            return ctx.author.id in owners
         return commands.check(is_owner)
 
     @commands.Cog.listener()
