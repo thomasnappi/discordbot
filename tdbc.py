@@ -4,6 +4,7 @@ except ImportError:
     subprocess.call([sys.executable, "-m", "pip", "install", 'discord.py[voice]'])
 finally:
     import discord
+    from discord.ext import commands
 try:
     import asyncio
 except ImportError:

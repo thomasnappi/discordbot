@@ -1,6 +1,18 @@
-import discord,asyncio,io,random,requests
+import discord,asyncio,io,random
 from discord.ext import commands
-from bs4 import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'beautifulsoup4'])
+finally:
+    from bs4 import BeautifulSoup
+try:
+    import requests
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'requests'])
+finally:
+    import requests
+
 
 class DND(commands.Cog):
     def __init__(self, client):

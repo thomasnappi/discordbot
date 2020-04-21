@@ -1,8 +1,41 @@
-import pygame,discord,asyncio,io,aiohttp,random,re,requests
+import discord,asyncio,io,random,re
 # import cv2
-from bs4 import BeautifulSoup
-import numpy as np
-from PIL import Image
+try:
+    import requests
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'requests'])
+finally:
+    import requests
+try:
+    import aiohttp
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'aiohttp'])
+finally:
+    import aiohttp
+try:
+    import pygame
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'pygame'])
+finally:
+    import pygame
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'beautifulsoup4'])
+finally:
+    from bs4 import BeautifulSoup
+try:
+    import numpy as np
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'numpy'])
+finally:
+    import numpy as np
+try:
+    from PIL import Image
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'pillow'])
+finally:
+    from PIL import Image
 from discord.ext import commands
 from stitchtest import *
 

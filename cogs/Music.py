@@ -1,7 +1,29 @@
+import discord, asyncio,os
 from discord.ext import commands
-import discord, asyncio,os,json,requests
-from bs4 import BeautifulSoup
-from youtube_search import YoutubeSearch
+try:
+    import requests
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'requests'])
+finally:
+    import requests
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'beautifulsoup4'])
+finally:
+    from bs4 import BeautifulSoup
+try:
+    import json
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'json'])
+finally:
+    import json
+try:
+    from youtube_search import YoutubeSearch
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'youtube-search'])
+finally:
+    from youtube_search import YoutubeSearch
 from voicebot import *
 
 # I DO NOT CLAIM CREDIT FOR ALL OF THE BELOW CODE; IT WAS LARGELY ADAPTED FROM ANOTHER MUSIC BOT.
