@@ -1,5 +1,17 @@
-import discord,asyncio,io,sys
-from discord.ext import commands
+try:
+    import discord
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'discord.py[voice]'])
+finally:
+    import discord
+try:
+    import asyncio
+except ImportError:
+    subprocess.call([sys.executable, "-m", "pip", "install", 'asyncio'])
+finally:
+    import asyncio
+
+
 
 TOKEN = ''
 
@@ -11,7 +23,7 @@ status = "Type !!help for help"
 client = commands.Bot(command_prefix=prefix)
 
 
-cogs = ["cogs.Utilities","cogs.DND","cogs.Maintenance","cogs.Fun","cogs.Activity","cogs.Annoying"]
+cogs = ["cogs.Utilities","cogs.DND","cogs.Maintenance","cogs.Fun","cogs.Activity","cogs.Annoying","cogs.Music"]
 
 if __name__ == '__main__':
     for cog in cogs:

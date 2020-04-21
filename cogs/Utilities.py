@@ -7,10 +7,11 @@ class Utilities(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self,member):
-        if member.guild.id != 640759197121904650:
-            return
-        role = member.guild.get_role(640767364459266070)
-        await member.add_roles(role)
+        pass
+        # if member.guild.id != 640759197121904650:
+            # return
+        # role = member.guild.get_role(640767364459266070)
+        # await member.add_roles(role)
 
     @commands.command(name="sslink",aliases=["ssl","screenshare","vclink"],pass_context=True)
     async def sslink(self,ctx):
