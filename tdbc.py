@@ -1,18 +1,5 @@
-try:
-    import discord
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'discord.py[voice]'])
-finally:
-    import discord
-    from discord.ext import commands
-try:
-    import asyncio
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'asyncio'])
-finally:
-    import asyncio
-
-
+import discord, asyncio, datetime
+from discord.ext import commands
 
 TOKEN = ''
 
@@ -38,6 +25,7 @@ async def on_ready():
     print("Logged in as")
     print(client.user.name)
     print(client.user.id)
+    print(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
     await client.change_presence(activity=discord.Game(name=status))
     print("----------")
     #print(client.extensions.keys())

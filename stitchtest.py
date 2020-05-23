@@ -1,6 +1,6 @@
 def almost_eq_2darray(arr1,arr2):
     alltrue = True
-    for i in range(len(arr1)):
+    for i in range(len(arr1.tolist())):
         for j in range(3):
             val = abs(int(arr1[i][j]) - int(arr2[i][j]))
             if val > 30:

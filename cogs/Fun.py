@@ -1,41 +1,8 @@
-import discord,asyncio,io,random,re
+import discord,asyncio,io,random,re,requests,aiohttp
+from PIL import Image, ImageDraw, ImageFont
+import numpy as np
+from bs4 import BeautifulSoup
 # import cv2
-try:
-    import requests
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'requests'])
-finally:
-    import requests
-try:
-    import aiohttp
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'aiohttp'])
-finally:
-    import aiohttp
-try:
-    import pygame
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'pygame'])
-finally:
-    import pygame
-try:
-    from bs4 import BeautifulSoup
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'beautifulsoup4'])
-finally:
-    from bs4 import BeautifulSoup
-try:
-    import numpy as np
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'numpy'])
-finally:
-    import numpy as np
-try:
-    from PIL import Image
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'pillow'])
-finally:
-    from PIL import Image
 from discord.ext import commands
 from stitchtest import *
 
@@ -45,7 +12,6 @@ class Fun(commands.Cog):
         self.party = {}
         self.day = {}
         self.hglock = {}
-        pygame.init()
 
     def owner_only():
         def is_owner(ctx):
@@ -104,14 +70,14 @@ class Fun(commands.Cog):
         
     #     limg[0].seek(0)
     #     img_array = np.asarray(bytearray(limg[0].read()), dtype=np.uint8)
-    #     im1 = cv2.imdecode(img_array,-1)
+    #     im1 = np.array(img_array)
     #     limg[1].seek(0)
     #     img_array = np.asarray(bytearray(limg[1].read()), dtype=np.uint8)
-    #     im2 = cv2.imdecode(img_array,-1)
+    #     im2 = np.array(img_array)
     #     ind = -1
-    #     for i in range(len(im1)):
+    #     for i in range(len(im1.tolist())):
     #         works = True
-    #         for j in range(i,len(im1)):
+    #         for j in range(i,len(im1.tolist())):
     #             if not almost_eq_2darray(im1[j],im2[j-i]):
     #                 works = False
     #                 break
@@ -119,8 +85,8 @@ class Fun(commands.Cog):
     #             ind = i
     #             break
 
-    #     comboarr = np.array(im1.tolist()[:ind] + im2.tolist())
-    #     is_success, buff = cv2.imencode(".png",comboarr)
+    #     comboarr = np.vstack((im1[:ind],im2))
+    #     buff = Image.fromarray(comboarr, "RGB")
 
     #     with io.BytesIO(buff) as output:
     #         output.seek(0)
@@ -156,61 +122,41 @@ class Fun(commands.Cog):
             await ctx.send("No image found")
             return
         limg.seek(0)
-        im = pygame.image.load(limg)
-        h = im.get_height()
-        w = im.get_width()
-
-        fobjs = []
-        remainder = []
-        words = caption.split(" ")
-
-        fsz = int(h / 6)
-        worksonall = False
-        loops = 0
-        while not worksonall:
-            font = pygame.font.Font("freesansbold.ttf",fsz)
-            worksonall = True
-            for i in range(len(words)):
-                t = font.render(words[i],True,(0,0,0))
-                if t.get_width() > w:
-                    worksonall = False
-                    fsz = int(fsz * 0.8)
-                    break
-            loops = loops + 1
-            if loops > 30:
-                await ctx.send("Sorry, the dimensions of this image do not allow this.")
-                return
-        loops = 0
-        while len(words) > 0:
-            #print(len(words))
-            tarr = words
-            words = []
-            for i in range(len(tarr)):
-                tstr = " " + " ".join(tarr) + " "
-                text = font.render(tstr,True,(0,0,0))
-                #print(text.get_width())
-                if text.get_width() < w:
-                    fobjs.append(text)
-                    break
-                else:
-                    words.append(tarr.pop())
-                #print(len(tarr))
-            words.reverse()
-            loops = loops + 1
-            if loops > 30:
-                await ctx.send("Sorry, that doesn't work.")
-                return
-            #print(len(fobjs))
+        im = Image.open(limg) # Load the image with PIL
+        ratio = im.width / im.height # Ratio of width/height of the image
+        nw = 1024 # We want every image to be 1024 pixels wide
+        nh = nw / ratio # Calculate the new height of the image maintaining original image ratio
+        rim = im.resize((nw,int(nh))) # Resize image so it's always nw pixels wide and nh pixels high
+        del im,ratio # Now that image is resized we don't need original
+        fsz = int(nw / 15) # Calculate font size from new width (should be constant every time)
+        lettersperrow = (nw - (fsz)) / fsz # Calculate (conservatively) how many letters we can fit in a row
         
-        screen = pygame.Surface((w,h+(fsz*(len(fobjs)+1))))
-        screen.fill((255,255,255))
-        screen.blit(im,(0,(fsz*(len(fobjs)+1))))
-        for i in range(len(fobjs)):
-            screen.blit(fobjs[i],((w-fobjs[i].get_width())/2,(fsz/2)+(fsz*i)))
-        pgstr = pygame.image.tostring(screen,"RGBA",False)
-        im = Image.frombytes("RGBA",(w,h+(fsz*(len(fobjs)+1))),pgstr)
-        with io.BytesIO() as output:
-            im.save(output,format="PNG")
+        words = caption.split(" ") # Split words along spaces from the input
+        rows = [""] # Row of strings to render on the image
+        crow = 0 # The current row we are adding words to
+        for w in words:
+            if len(w) + len(rows[crow]) + 1 > lettersperrow: # If word is too long to fit
+                if len(rows[crow]) == 0: # If word is too long for it's own line, it is too long
+                    await ctx.send("Word too long; max word length is {} characters.".format(lettersperrow))
+                    return
+                rows.append(w) # Otherwise add a new row and put it in
+                crow = crow + 1 # Move our counter to the next row
+            else:
+                rows[crow] = rows[crow] + " " + w # There is enough space to add it to the current row
+        del crow,words # Words aren't needed anymore & crow is also unnecessary
+        imarr = np.array(rim)[:,:,:3] # Make an array from resized image; cut everything other than simple RGB values
+        del rim # We don't need original resized image anymore
+        topbuf = Image.new('RGB', (nw, int(fsz * (len(rows)+1))), (255, 255, 255)) # Create an image the size of the white space we need
+        newimg = Image.fromarray(np.vstack((np.array(topbuf),imarr)), 'RGB') # Create a new image stacking the white space on top
+        del imarr,topbuf # Delete the array and buffer image
+        draw = ImageDraw.Draw(newimg) # Create a draw object for the new image
+        font = ImageFont.truetype("freesansbold.ttf", fsz) # The font we will use to render the font
+        for i in range(len(rows)):
+            draw.text((fsz/2,int(fsz/2) + (fsz * i)),rows[i],(0,0,0),font=font) # Draw all of our rows of text, with a left/right/top/bottom buffer
+        del draw,rows # We no longer need the draw object or the rows of strings
+
+        with io.BytesIO() as output: # Send the image in discord
+            newimg.save(output,format="PNG")
             output.seek(0)
             await ctx.send(file=discord.File(output,filename="img.png"))
     

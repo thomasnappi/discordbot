@@ -1,26 +1,10 @@
 import io, random, discord
 from discord.ext import commands
+import matplotlib.pyplot as plt
+import numpy as np
+import datetime
+from datetime import timezone
 
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'matplotlib'])
-finally:
-    import matplotlib.pyplot as plt
-try:
-    import numpy as np
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'numpy'])
-finally:
-    import numpy as np
-try:
-    import datetime
-    from datetime import timezone
-except ImportError:
-    subprocess.call([sys.executable, "-m", "pip", "install", 'datetime'])
-finally:
-    import datetime
-    from datetime import timezone
 
 class Activity(commands.Cog):
     def __init__(self, client):
