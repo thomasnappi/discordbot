@@ -18,7 +18,19 @@ Board = List[List[str]]
 # ############### #
 
 assets = {
-    "board" : np.array(Image.open("board.png"))
+    "board" : np.array(Image.open("board.png"))[:,:,:3],
+    "wt"    : np.array(Image.open("wt.png"))[:,:,:4],
+    "wq"    : np.array(Image.open("wq.png"))[:,:,:4],
+    "wb"    : np.array(Image.open("wb.png"))[:,:,:4],
+    "wk"    : np.array(Image.open("wk.png"))[:,:,:4],
+    "wr"    : np.array(Image.open("wr.png"))[:,:,:4],
+    "wp"    : np.array(Image.open("wp.png"))[:,:,:4],
+    "bt"    : np.array(Image.open("bt.png"))[:,:,:4],
+    "bq"    : np.array(Image.open("bq.png"))[:,:,:4],
+    "bb"    : np.array(Image.open("bb.png"))[:,:,:4],
+    "bk"    : np.array(Image.open("bk.png"))[:,:,:4],
+    "br"    : np.array(Image.open("br.png"))[:,:,:4],
+    "bp"    : np.array(Image.open("bp.png"))[:,:,:4]
     }
 
 # This is the standard opening chessboard.
@@ -66,6 +78,28 @@ def in_bounds(n : int) -> bool:
     """ [in_bounds(n)] returns if [n] is within 0-7. """
     return n >= 0 and n < 8
 
+def moves_to_readable(moves : List[str]) -> str:
+    """ [moves_to_readable(moves)] turns a list of machine moves into a string of human-readable moves. """
+    c2s = {"0":"A","1":"B","2":"C","3":"D","4":"E","5":"F","6":"G","7":"H"}
+    string = ""
+    for i in moves:
+        string = string + c2s[i[2]] + str(8-int(i[1])) + c2s[i[5]] + str(8-int(i[4])) + ", "
+    if len(string) > 2:
+        string = string[:-2]
+    return string
+
+def move_to_machine(moves : List[str], m : str) -> str:
+    """ [move_to_machine(moves,m)] converts a standard move to machine location, if it is in the list of moves. """
+    s2c = {"A":"0","B":"1","C":"2","D":"3","E":"4","F":"5","G":"6","H":"7"}
+    try:
+        partial = str(8 - int(m[1])) + s2c[m[0]] + ":" + str(8 - int(m[3])) + s2c[m[2]]
+        for i in moves:
+            if i[1:] == partial:
+                return i
+    except:
+        pass
+    return "Invalid move."
+
 # ################## #
 # BOARD MANIPULATION #
 # ################## #
@@ -78,9 +112,12 @@ def move_piece(cboard : Board, move : str) -> Board:
     startx = int(move[2])
     endy   = int(move[4])
     endx   = int(move[5])
+    piece = cboard[starty][startx]
+    if piece[1] == "T": # Mark a king as having moved when it moves. TODO: check this for updating the king wrong
+        piece = piece[0] + "t"
     # Currently only simple takes allowed
     if move[0] == "S" or move[0] == "C": # This is a "simple" move (S) or a "capture" move (C)
-        brd[endy][endx] = brd[starty][startx]
+        brd[endy][endx] = piece
         brd[starty][startx] = '  '
     return brd
 
@@ -119,7 +156,7 @@ def rook_moves(cboard,i,j):
     anticolor = opp_color(color)
     moves = []
 
-    for m in range(8): # Calculate all downward moves
+    for m in range(1,8): # Calculate all downward moves
         ti = i+m
         tj = j
         if in_bounds(ti) and in_bounds(tj):
@@ -134,7 +171,7 @@ def rook_moves(cboard,i,j):
                 print("INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
-    for m in range(8): # Calculate all upward moves
+    for m in range(1,8): # Calculate all upward moves
         ti = i-m
         tj = j
         if in_bounds(ti) and in_bounds(tj):
@@ -149,7 +186,7 @@ def rook_moves(cboard,i,j):
                 print("INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
-    for m in range(8): # Calculate all rightward moves
+    for m in range(1,8): # Calculate all rightward moves
         ti = i
         tj = j+m
         if in_bounds(ti) and in_bounds(tj):
@@ -164,7 +201,7 @@ def rook_moves(cboard,i,j):
                 print("INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
-    for m in range(8): # Calculate all leftward moves
+    for m in range(1,8): # Calculate all leftward moves
         ti = i
         tj = j-m
         if in_bounds(ti) and in_bounds(tj):
@@ -200,7 +237,7 @@ def knight_moves(cboard,i,j):
         ti = m[0]
         tj = m[1]
         if in_bounds(ti) and in_bounds(tj): # Check if the location is on the board
-            if cboardti][tj][0] == anticolor: # Check if location is an enemy piece
+            if cboard[ti][tj][0] == anticolor: # Check if location is an enemy piece
                 moves.append("C{0}{1}:{2}{3}".format(i,j,ti,tj))
             if cboard[ti][tj] == '  ': # Check if location is empty
                 moves.append("S{0}{1}:{2}{3}".format(i,j,ti,tj))
@@ -211,7 +248,7 @@ def bishop_moves(cboard,i,j):
     color = cboard[i][j][0]
     anticolor = opp_color(color)
     moves = []
-    for m in range(8): # Calculate all up-left moves
+    for m in range(1,8): # Calculate all up-left moves
         ti = i-m
         tj = j-m
         if in_bounds(ti) and in_bounds(tj):
@@ -226,7 +263,7 @@ def bishop_moves(cboard,i,j):
                 print("INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
-    for m in range(8): # Calculate all down-left moves
+    for m in range(1,8): # Calculate all down-left moves
         ti = i+m
         tj = j-m
         if in_bounds(ti) and in_bounds(tj):
@@ -241,7 +278,7 @@ def bishop_moves(cboard,i,j):
                 print("INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
-    for m in range(8): # Calculate all down-right moves
+    for m in range(1,8): # Calculate all down-right moves
         ti = i+m
         tj = j+m
         if in_bounds(ti) and in_bounds(tj):
@@ -256,7 +293,7 @@ def bishop_moves(cboard,i,j):
                 print("INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
-    for m in range(8): # Calculate all up-right moves
+    for m in range(1,8): # Calculate all up-right moves
         ti = i-m
         tj = j+m
         if in_bounds(ti) and in_bounds(tj):
@@ -302,8 +339,7 @@ def king_moves(cboard,i,j):
     return moves
 
 def valid_moves(cboard : Board, color : str) -> List[str]:
-    """ [valid_moves(cboard,i,j)] calculates all moves for a color given a board.
-        TODO: Add in restrictions on moving into/out of check. """
+    """ [valid_moves(cboard,i,j)] calculates all moves for a color given a board. """
     moves = []
     for i in range(8):
         for j in range(8):
@@ -325,6 +361,43 @@ def valid_moves(cboard : Board, color : str) -> List[str]:
                 else:
                     print("INVALID PIECE AT Y={0},X={1}:{2}".format(i,j,cboard[i][j]))
     return moves
+
+def in_check(cboard: Board, color : str, kingpos) -> bool:
+    """ [in_check(cboard,color,kingpos)] returns if color is in check given the board layout
+        and king position. """
+    emoves = valid_moves(cboard, opp_color(color))
+    for em in emoves:
+        # print("({0},{1})=({2},{3})".format(em[4],em[5],kingpos[0],kingpos[1]))
+        if int(em[4]) == kingpos[0] and int(em[5]) == kingpos[1]:
+            return True
+    return False
+
+def valid_moves_wrap(cboard : Board, color : str) -> List[str]:
+    """ [valid_moves_wrap(cboard,color)] returns moves and whether or not there is a tie
+        or the game has been lost. """
+    moves = valid_moves(cboard, color)
+    ncmoves = []
+    for move in moves:
+        nb = move_piece(cboard, move)
+        kingpos = [-1,-1]
+        for i in range(8):
+            for j in range(8):
+                if nb[i][j].lower() == color.lower() + "t":
+                    kingpos = [i,j]
+                    break
+            if kingpos != [-1,-1]:
+                break
+        if not in_check(nb,color,kingpos):
+            ncmoves.append(move)
+    if len(ncmoves) == 0:
+        if in_check(cboard,color,kingpos):
+            return {"moves":[],"state":color+" lost"}
+        else:
+            return {"moves":[],"state":"tied"}
+    else:
+        return {"moves":ncmoves,"state":"playing"}
+            
+
 
 # ################### #
 # RENDERING FUNCTIONS #
@@ -350,18 +423,11 @@ def insert_image(y : int, x : int, brd : np.array, img : np.array):
                 brd[(y*64)+i][(x*64)+j] = merge_pixels(brd[(y*64)+i][(x*64)+j],img[i][j])
 
 def render_board(cboard : Board) -> Image:
-    """ [render_board(cboard)] renders an entire chess board.
-        TODO: UPDATE THIS FROM CHECKERS. """
+    """ [render_board(cboard)] renders an entire chess board. """
     global assets
     res = assets["board"].copy()
     for i in range(8):
         for j in range(8):
-            if cboard[i][j] == "W":
-                insert_image(i,j,res,assets["w"])
-            if cboard[i][j] == "B":
-                insert_image(i,j,res,assets["b"])
-            if cboard[i][j] == "WK":
-                insert_image(i,j,res,assets["wk"])
-            if cboard[i][j] == "BK":
-                insert_image(i,j,res,assets["bk"])
+            if cboard[i][j] != '  ':
+                insert_image(i,j,res,assets[cboard[i][j].lower()])
     return Image.fromarray(res)
