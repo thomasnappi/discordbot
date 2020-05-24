@@ -150,5 +150,10 @@ class Chess(commands.Cog):
         else:
             await ctx.send("You can't forfeit a game you aren't a part of!")
 
+    @commands.command()
+    async def crules(self,ctx):
+        """ Print the rules of chess. """
+        await ctx.send("The rules are the same as standard chess, with one exception; en passant can occur between any adjacent pawns with space, instead of just the 5th rank to a pawn that has moved 2 spaces.")
+
 def setup(client):
     client.add_cog(Chess(client))

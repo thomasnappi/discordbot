@@ -34,7 +34,7 @@ assets = {
     }
 
 # This is the standard opening chessboard.
-# K is knight, T is unmoved king, t is moved king (relevant for castling)
+# K is knight, T is unmoved king, t is moved king (relevant for castling), R is for unmoved rook, r is moved rook
 start_board = [
     ['BR','BK','BB','BQ','BT','BB','BK','BR'],
     ['BP','BP','BP','BP','BP','BP','BP','BP'],
@@ -113,12 +113,23 @@ def move_piece(cboard : Board, move : str) -> Board:
     endy   = int(move[4])
     endx   = int(move[5])
     piece = cboard[starty][startx]
-    if piece[1] == "T": # Mark a king as having moved when it moves. TODO: check this for updating the king wrong
+    if piece[1] == "T": # Mark a king as having moved when it moves.
         piece = piece[0] + "t"
+    if piece[1] == "R": # Mark the rook as having moved when it moves.
+        piece = piece[0] + "r"
     # Currently only simple takes allowed
     if move[0] == "S" or move[0] == "C": # This is a "simple" move (S) or a "capture" move (C)
         brd[endy][endx] = piece
         brd[starty][startx] = '  '
+    if move[0] == "E": # En passant moves
+        brd[endy][endx] = piece
+        brd[starty][endx] = '  '
+        brd[starty][endy] = '  '
+    if move[0] == "Q" or move[0] == "K": # Castle moves
+        """K00:00,00:00"""
+        brd[endy][endx] = piece
+        brd[starty][startx] = '  '
+        brd = move_piece(brd, "S"+move[7:]) # Move the rook
     return brd
 
 # ################ #
@@ -148,6 +159,12 @@ def pawn_moves(cboard,i,j):
         moves.append("C{0}{1}:{2}{3}".format(i,j,capleft[0],capleft[1]))
     if in_bounds(capright[0]) and in_bounds(capright[1]) and cboard[capright[0]][capright[1]][0] == anticolor: # Check if we can capture to the right
         moves.append("C{0}{1}:{2}{3}".format(i,j,capright[0],capright[1]))
+    # En Passant rules
+    # En passants are less strict than standard rules - any adjacent pawns can en passant if the space to do so is clear
+    if in_bounds(capright[0]) and in_bounds(capright[1]) and cboard[capright[0]][j] == anticolor:
+        moves.append("E{0}{1}:{2}{3}".format(i,j,capright[0],capright[1])) # We can en passant
+    if in_bounds(capleft[0]) and in_bounds(capleft[1]) and cboard[capleft[0]][j] == anticolor:
+        moves.append("E{0}{1}:{2}{3}".format(i,j,capleft[0],capleft[1])) # We can en passant
     return moves
 
 def rook_moves(cboard,i,j):
@@ -336,6 +353,14 @@ def king_moves(cboard,i,j):
                 moves.append("C{0}{1}:{2}{3}".format(i,j,ti,tj))
             elif cboard[ti][tj] == '  ': # Can we move to a free space here?
                 moves.append("S{0}{1}:{2}{3}".format(i,j,ti,tj))
+    # Castle rules
+    if cboard[i][j][1] == "T": # Check that king is unmoved
+        if in_bounds(j+1) and in_bounds(j+2) and in_bounds(j+3):
+            if cboard[i][j+1] == '  ' and cboard[i][j+2] == '  ' and cboard[i][j+3] == color + "R":
+                moves.append("K{0}{1}:{2}{3},{4}{5}:{6}{7}".format(i,j,i,j+2,i,j+3,i,j+1)) # Kingside castle
+        if in_bounds(j-1) and in_bounds(j-2) and in_bounds(j-3) and in_bounds(j-4):
+            if cboard[i][j-1] == '  ' and cboard[i][j-2] == '  ' and cboard[i][j-3] == '  ' and cboard[i][j-4] == color + "R":
+                moves.append("Q{0}{1}:{2}{3},{4}{5}:{6}{7}".format(i,j,i,j-2,i,j-4,i,j-1)) # Queenside castle
     return moves
 
 def valid_moves(cboard : Board, color : str) -> List[str]:
