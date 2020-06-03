@@ -1,4 +1,4 @@
-import discord,asyncio,io,random,re,requests,aiohttp
+import discord,asyncio,io,random,re,requests,aiohttp,html
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from bs4 import BeautifulSoup
@@ -669,7 +669,57 @@ class Fun(commands.Cog):
                     ts = ts + "\n" + rellines.pop(0)
             await ctx.send(ts)
         #await ctx.send(string)
-                        
+    
+    @commands.command(name="printplace",aliases=["printpl","pp"],pass_context=True)
+    async def printplace(self,ctx):
+        """ Prints the current place image. """
+        await ctx.send("The current state of place.",file=discord.File("place.jpg"))
+
+    @commands.command(name="editplace",aliases=["ep"],pass_context=True)
+    async def ep(self,ctx,x:int,y:int,color):
+        """ Changes pixel at x,y to a color of format (R,G,B) (or one of these colors: red, green, blue, yellow, purple, black, white). """
+        colordict = {"red":(255,0,0),"green":(0,255,0),"blue":(0,0,255),"yellow":(255,255,0),"purple":(255,0,255),"black":(0,0,0),"white":(255,255,255)}
+        if color in colordict.keys():
+            color = colordict[color]
+        else:
+            try:
+                c = color[1:].split(",")
+                color = (int(c[0]),int(c[1]),int(c[2][:-1]))
+            except:
+                await ctx.send("Malformed.")
+        im = np.array(Image.open("place.jpg"))
+        im[y][x] = color
+        print(im[y][x])
+        im2 = Image.fromarray(im)
+        im2.save("place.jpg")
+        await ctx.send(file=discord.File("place.jpg"))
+
+    @commands.command(name="xkcd",pass_context=True)
+    async def xkcd(self,ctx,num : int = -1):
+        """ Get an xkcd comic by number, or just grab the most recent one. """
+        if (num == -1):
+            num = ""
+        headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36' }
+        url = 'https://www.xkcd.com/{}'.format(num)
+        req = requests.get(url,headers=headers)
+        pls = "Image URL (for hotlinking/embedding): "
+        tp = "title=\""
+        cs = req.text.index("<div id=\"comic\">")
+        ts = req.text.index(tp,cs) + len(tp)
+        te = req.text[ts:].index("\"")
+        title = html.unescape(req.text[ts:ts+te])
+        start = req.text.index(pls) + len(pls)
+        end = req.text[start:].index("\n",1)
+        nt = req.text[start:end+start]
+        fn = nt.split("/")[-1]
+        async with aiohttp.ClientSession() as session:
+            async with session.get(nt) as resp:
+                if resp.status != 200:
+                    print("failed to get file.")
+                    await ctx.send("Failed to get image: {}".format(fn))
+                    return
+                else:
+                    await ctx.send(title,file=discord.File(io.BytesIO(await resp.read()),fn))
 
 def setup(client):
     client.add_cog(Fun(client))

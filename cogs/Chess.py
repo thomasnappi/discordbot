@@ -1,4 +1,4 @@
-import discord,asyncio,io
+import discord,asyncio,io,json
 from discord.ext import commands
 from chess import *
 
@@ -22,11 +22,11 @@ class Chess(commands.Cog):
             await ctx.send("Color must be black or white.")
             return
         
-        if not cid in self.games.keys():
-            self.games[cid] = {"B":-1,"W":-1,"board":bcopy(start_board),"turn":"pre"}
-        if self.games[cid]["W"] == ctx.author.id or self.games[cid]["B"] == ctx.author.id:
-            await ctx.send("You cannot join the game twice!")
-            return
+        if not cid in self.games.keys() or self.games[cid] == None:
+            self.games[cid] = {"B":-1,"W":-1,"board":bcopy(start_board),"turn":"pre","lm":"None"}
+        # if self.games[cid]["W"] == ctx.author.id or self.games[cid]["B"] == ctx.author.id:
+        #     await ctx.send("You cannot join the game twice!")
+        #     return
         if self.games[cid][color] != -1:
             await ctx.send("That color has already been claimed.")
             return
@@ -95,7 +95,7 @@ class Chess(commands.Cog):
             await ctx.send(msg,file=discord.File(output,filename="img.png"))
 
         self.games[cid]["turn"] = opp_color(turn) # Change whose turn it is
-
+        self.games[cid]["lm"] = move
         kingpos = [-1,-1]
         for i in range(8):
             for j in range(8):
@@ -125,17 +125,34 @@ class Chess(commands.Cog):
             await ctx.send("No game in progress!")
             return
         b = render_board(self.games[cid]["board"])
+        move = self.games[cid]["lm"]
         msg = ""
-        if self.games[cid]["turn"] == "W":
-            msg = "White moved {}.".format(move)
-        else:
-            msg = "Black moved {}.".format(move)
+        try:
+            if self.games[cid]["turn"] == "W":
+                msg = "White moved {}.".format(move)
+            else:
+                msg = "Black moved {}.".format(move)
+        except:
+            pass
         # Send the rendered board in discord
         with io.BytesIO() as output:
             b.save(output,format="PNG")
             output.seek(0)
             await ctx.send(msg,file=discord.File(output,filename="img.png"))
 
+    @commands.command()
+    async def cexp(self,ctx):
+        """ Export current game. """
+        try:
+            await ctx.send(json.dumps(self.games[ctx.channel.id]))
+        except:
+            await ctx.send("No game in progress.")
+        # await ctx.send(json.dumps(self.games[ctx.channel.id]))
+
+    @commands.command()
+    async def cimp(self,ctx,*,all):
+        """ Import a game from string. """
+        self.games[ctx.channel.id] = json.loads(all)
 
     @commands.command()
     async def cforfeit(self,ctx):
@@ -153,7 +170,7 @@ class Chess(commands.Cog):
     @commands.command()
     async def crules(self,ctx):
         """ Print the rules of chess. """
-        await ctx.send("The rules are the same as standard chess, with one exception; en passant can occur between any adjacent pawns with space, instead of just the 5th rank to a pawn that has moved 2 spaces.")
+        await ctx.send("The rules are the same as standard chess.")
 
 def setup(client):
     client.add_cog(Chess(client))
