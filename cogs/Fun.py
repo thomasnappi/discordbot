@@ -33,64 +33,16 @@ class Fun(commands.Cog):
             else:
                 await message.channel.send("Yes, you're right.")
 
-    # @commands.command(name="stitchpics",aliases=["joinimages"],pass_context=True)
-    # async def stitchpics(self,ctx):
-    #     """Attempt to join two different images together, previous one and then more recent."""
-    #     if not ctx.author.permissions_in(ctx.channel).attach_files:
-    #         await ctx.author.send("You do not have permissions to send images in {0.name}".format(ctx.channel))
-    #         return
-    #     limg = [io.BytesIO(),io.BytesIO()]
-    #     fn = ["",""]
-    #     imnum = 0
-    #     async for message in ctx.history(limit=10):
-    #         cont = message.content.lower()
-    #         if len(message.attachments) > 0:
-    #             await message.attachments[0].save(limg[imnum])
-    #             fn[imnum] = message.attachments[0].filename
-    #             imnum = imnum + 1
-    #             if imnum > 1:
-    #                 break
-    #         elif ".gif" in cont or ".png" in cont or ".jpg" in cont:
-    #             url = "http://"+message.content.split("//")[1].split(" ")[0]
-    #             async with aiohttp.ClientSession() as session:
-    #                 async with session.get(url) as resp:
-    #                     if resp.status != 200:
-    #                         print("failed to get file.")
-    #                     else:
-    #                         limg[imnum] = io.BytesIO(await resp.read())
-    #                         fn[imnum] = message.content.split("//")[1].split(" ")[0].split("/")[-1]
-    #             imnum = imnum + 1
-    #             if imnum > 1:
-    #                 break
-    #     if fn[1] == "":
-    #         await ctx.send("Images not found")
-    #         return
-    #     fn.reverse()
-    #     limg.reverse()
-        
-    #     limg[0].seek(0)
-    #     img_array = np.asarray(bytearray(limg[0].read()), dtype=np.uint8)
-    #     im1 = np.array(img_array)
-    #     limg[1].seek(0)
-    #     img_array = np.asarray(bytearray(limg[1].read()), dtype=np.uint8)
-    #     im2 = np.array(img_array)
-    #     ind = -1
-    #     for i in range(len(im1.tolist())):
-    #         works = True
-    #         for j in range(i,len(im1.tolist())):
-    #             if not almost_eq_2darray(im1[j],im2[j-i]):
-    #                 works = False
-    #                 break
-    #         if works == True:
-    #             ind = i
-    #             break
-
-    #     comboarr = np.vstack((im1[:ind],im2))
-    #     buff = Image.fromarray(comboarr, "RGB")
-
-    #     with io.BytesIO(buff) as output:
-    #         output.seek(0)
-    #         await ctx.send(file=discord.File(output,filename="img.png"))
+    @commands.command()
+    async def retcon(self,ctx):
+        async for message in ctx.history(limit=20):
+            cont = message.content
+            if cont == "No, you're wrong." and message.author.id == self.client.user.id:
+                await message.edit(content="Yes, you're right.")
+                break
+            elif cont == "Yes, you're right." and message.author.id == self.client.user.id:
+                await message.edit(content="No, you're wrong.")
+                break
 
     @commands.command(name="ttimg",pass_context=True)
     async def ttimg(self,ctx,*,caption:str):

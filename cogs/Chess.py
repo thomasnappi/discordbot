@@ -84,10 +84,10 @@ class Chess(commands.Cog):
         # Add who moved what to the image message
         msg = ""
         if turn == "W":
-            msg = "White moved {}.".format(move)
+            msg = "White moved {0}.  It is now <@{1}>'s turn".format(move,self.games[cid]["B"])
         else:
-            msg = "Black moved {}.".format(move)
-
+            msg = "Black moved {0}.  It is now <@{1}>'s turn".format(move,self.games[cid]["W"])
+        # msg = msg + ". It is now <@{}>'s turn".format()
         # Send the rendered board in discord
         with io.BytesIO() as output:
             b.save(output,format="PNG")
