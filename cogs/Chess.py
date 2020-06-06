@@ -6,6 +6,7 @@ class Chess(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.games = {}
+        self.boardsel = {}
 
     @commands.command()
     async def cjoin(self,ctx,color):
@@ -35,6 +36,18 @@ class Chess(commands.Cog):
         await ctx.send("{0} has joined the game as {1}".format(ctx.author.mention,c))
 
     @commands.command()
+    async def cboard(self,ctx,target):
+        """ Change the current board image between the standard one and a fun one, with "reg" or "asl". """
+        if target.lower() == "asl":
+            self.boardsel[ctx.guild.id] = "asl"
+            # print("asl")
+        elif target.lower() == "reg":
+            self.boardsel[ctx.guild.id] = "reg"
+            # print("reg")
+        else:
+            await ctx.send("Invalid name; use reg or asl.")
+
+    @commands.command()
     async def cstart(self,ctx):
         """ Start a chess game after two players have joined. """
         cid = ctx.channel.id
@@ -45,7 +58,12 @@ class Chess(commands.Cog):
             await ctx.send("Not enough players!")
             return
         self.games[cid]["turn"] = "W"
-        b = render_board(self.games[cid]["board"])
+        bs = ""
+        if not ctx.guild.id in self.boardsel.keys():
+            bs = "reg"
+        else:
+            bs = self.boardsel[ctx.guild.id]
+        b = render_board(self.games[cid]["board"],bs)
         moves = moves_to_readable(valid_moves_wrap(self.games[cid]["board"],"W")["moves"])
         if self.games[cid]["turn"] == "W":
             moves = "White to move.  Possible moves: " + moves
@@ -79,7 +97,12 @@ class Chess(commands.Cog):
             await ctx.send("Invalid move; your possible moves are {}".format(moves_to_readable(pmresp["moves"])))
             return
         self.games[cid]["board"] = move_piece(self.games[cid]["board"],mm)
-        b = render_board(self.games[cid]["board"])
+        bs = ""
+        if not ctx.guild.id in self.boardsel.keys():
+            bs = "reg"
+        else:
+            bs = self.boardsel[ctx.guild.id]
+        b = render_board(self.games[cid]["board"],bs)
 
         # Add who moved what to the image message
         msg = ""
@@ -124,7 +147,12 @@ class Chess(commands.Cog):
         if not cid in self.games.keys():
             await ctx.send("No game in progress!")
             return
-        b = render_board(self.games[cid]["board"])
+        bs = ""
+        if not ctx.guild.id in self.boardsel.keys():
+            bs = "reg"
+        else:
+            bs = self.boardsel[ctx.guild.id]
+        b = render_board(self.games[cid]["board"],bs)
         move = self.games[cid]["lm"]
         msg = ""
         try:

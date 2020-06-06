@@ -18,19 +18,20 @@ Board = List[List[str]]
 # ############### #
 
 assets = {
-    "board" : np.array(Image.open("board.png"))[:,:,:3],
-    "wt"    : np.array(Image.open("wt.png"))[:,:,:4],
-    "wq"    : np.array(Image.open("wq.png"))[:,:,:4],
-    "wb"    : np.array(Image.open("wb.png"))[:,:,:4],
-    "wk"    : np.array(Image.open("wk.png"))[:,:,:4],
-    "wr"    : np.array(Image.open("wr.png"))[:,:,:4],
-    "wp"    : np.array(Image.open("wp.png"))[:,:,:4],
-    "bt"    : np.array(Image.open("bt.png"))[:,:,:4],
-    "bq"    : np.array(Image.open("bq.png"))[:,:,:4],
-    "bb"    : np.array(Image.open("bb.png"))[:,:,:4],
-    "bk"    : np.array(Image.open("bk.png"))[:,:,:4],
-    "br"    : np.array(Image.open("br.png"))[:,:,:4],
-    "bp"    : np.array(Image.open("bp.png"))[:,:,:4]
+    "board"   : np.array(Image.open("./chess/board.png"))[:,:,:3],
+    "basling" : np.array(Image.open("./chess/basling.png"))[:,:,:3],
+    "wt"      : np.array(Image.open("./chess/wt.png"))[:,:,:4],
+    "wq"      : np.array(Image.open("./chess/wq.png"))[:,:,:4],
+    "wb"      : np.array(Image.open("./chess/wb.png"))[:,:,:4],
+    "wk"      : np.array(Image.open("./chess/wk.png"))[:,:,:4],
+    "wr"      : np.array(Image.open("./chess/wr.png"))[:,:,:4],
+    "wp"      : np.array(Image.open("./chess/wp.png"))[:,:,:4],
+    "bt"      : np.array(Image.open("./chess/bt.png"))[:,:,:4],
+    "bq"      : np.array(Image.open("./chess/bq.png"))[:,:,:4],
+    "bb"      : np.array(Image.open("./chess/bb.png"))[:,:,:4],
+    "bk"      : np.array(Image.open("./chess/bk.png"))[:,:,:4],
+    "br"      : np.array(Image.open("./chess/br.png"))[:,:,:4],
+    "bp"      : np.array(Image.open("./chess/bp.png"))[:,:,:4]
     }
 
 # This is the standard opening chessboard.
@@ -116,7 +117,7 @@ def move_to_machine(moves : List[str], m : str) -> str:
                 if i[1:] == partial:
                     return i
     except:
-        print("Exception: " + m)
+        print("Line 120; Exception: " + m)
         pass
     return "Invalid move."
 
@@ -136,17 +137,17 @@ def move_piece(cboard : Board, move : str) -> Board:
     for i in range(8):
         for j in range(8):
             if brd[i][j][1] == "p":
-                print("Pawn unmarked")
+                # print("Pawn unmarked")
                 brd[i][j] = brd[i][j][0] + "P" # Mark this pawn as no longer "just moved"
     if piece[1] == "P" and ((starty - endy == 2) or (starty - endy == -2)): # Mark a pawn if it just moved 2
-        print("Eligible pawn marked")
+        # print("Eligible pawn marked")
         piece = piece[0] + "p"
         # print("properly changed string of pawn moved")
     if piece[1] == "T": # Mark a king as having moved when it moves.
-        print("Moved king marked.")
+        # print("Moved king marked.")
         piece = piece[0] + "t"
     if piece[1] == "R": # Mark the rook as having moved when it moves.
-        print("Moved rook marked")
+        # print("Moved rook marked")
         piece = piece[0] + "r"
     # Currently only simple takes allowed
     if move[0] == "S" or move[0] == "C": # This is a "simple" move (S) or a "capture" move (C)
@@ -200,7 +201,7 @@ def pawn_moves(cboard,i,j):
     if in_bounds(capright[0]) and in_bounds(capright[1]) and cboard[capright[0]][capright[1]][0] == anticolor: # Check if we can capture to the right
         moves.append("C{0}{1}:{2}{3}".format(i,j,capright[0],capright[1]))
     # En Passant rules
-    print(capright,j)
+    # print(capright,j)
     if in_bounds(capright[0]) and in_bounds(capright[1]) and  cboard[i][capright[1]][1] == 'p': # Don't need to worry much about color, since pawns can't hop 2 to the 5th rank
         moves.append("E{0}{1}:{2}{3}".format(i,j,capright[0],capright[1])) # We can en passant
     if in_bounds(capleft[0]) and in_bounds(capleft[1]) and  cboard[i][capleft[1]][1] == 'p':
@@ -225,7 +226,7 @@ def rook_moves(cboard,i,j):
             elif cboard[ti][tj][0] == color: # Are we blocked by our own piece here? (This means we can't move any further this way)
                 break
             else: # There should be no case here; print something and let us know!
-                print("RM1: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
+                print("Line 229; RM1: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
     for m in range(1,8): # Calculate all upward moves
@@ -240,7 +241,7 @@ def rook_moves(cboard,i,j):
             elif cboard[ti][tj][0] == color: # Are we blocked by our own piece here? (This means we can't move any further this way)
                 break
             else: # There should be no case here; print something and let us know!
-                print("RM2: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
+                print("Line 244; RM2: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
     for m in range(1,8): # Calculate all rightward moves
@@ -255,7 +256,7 @@ def rook_moves(cboard,i,j):
             elif cboard[ti][tj][0] == color: # Are we blocked by our own piece here? (This means we can't move any further this way)
                 break
             else: # There should be no case here; print something and let us know!
-                print("RM3: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
+                print("Line 259; RM3: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
     for m in range(1,8): # Calculate all leftward moves
@@ -270,7 +271,7 @@ def rook_moves(cboard,i,j):
             elif cboard[ti][tj][0] == color: # Are we blocked by our own piece here? (This means we can't move any further this way)
                 break
             else: # There should be no case here; print something and let us know!
-                print("RM4: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
+                print("Line 274; RM4: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
     return moves
@@ -317,7 +318,7 @@ def bishop_moves(cboard,i,j):
             elif cboard[ti][tj][0] == color: # Are we blocked by our own piece here? (This means we can't move any further this way)
                 break
             else: # There should be no case here; print something and let us know!
-                print("BM1: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
+                print("Line 321; BM1: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
     for m in range(1,8): # Calculate all down-left moves
@@ -332,7 +333,7 @@ def bishop_moves(cboard,i,j):
             elif cboard[ti][tj][0] == color: # Are we blocked by our own piece here? (This means we can't move any further this way)
                 break
             else: # There should be no case here; print something and let us know!
-                print("BM2: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
+                print("Line 336; BM2: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
     for m in range(1,8): # Calculate all down-right moves
@@ -347,7 +348,7 @@ def bishop_moves(cboard,i,j):
             elif cboard[ti][tj][0] == color: # Are we blocked by our own piece here? (This means we can't move any further this way)
                 break
             else: # There should be no case here; print something and let us know!
-                print("BM3: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
+                print("Line 351; BM3: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
     for m in range(1,8): # Calculate all up-right moves
@@ -362,7 +363,7 @@ def bishop_moves(cboard,i,j):
             elif cboard[ti][tj][0] == color: # Are we blocked by our own piece here? (This means we can't move any further this way)
                 break
             else: # There should be no case here; print something and let us know!
-                print("BM4: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
+                print("Line 366; BM4: INVALID PIECE AT Y={0},X={1}:{2}".format(ti,tj,cboard[ti][tj]))
         else: # If this is out of bounds, we can't move this way
             break
     return moves
@@ -424,7 +425,7 @@ def valid_moves(cboard : Board, color : str) -> List[str]:
                 elif piece == "T":
                     moves = moves + king_moves(cboard,i,j)
                 else:
-                    print("VM: INVALID PIECE AT Y={0},X={1}:{2}".format(i,j,cboard[i][j]))
+                    print("Line 428; VM: INVALID PIECE AT Y={0},X={1}:{2}".format(i,j,cboard[i][j]))
     return moves
 
 def in_check(cboard: Board, color : str, kingpos) -> bool:
@@ -487,10 +488,16 @@ def insert_image(y : int, x : int, brd : np.array, img : np.array):
             if img[i][j][3] != 0:
                 brd[(y*64)+i][(x*64)+j] = merge_pixels(brd[(y*64)+i][(x*64)+j],img[i][j])
 
-def render_board(cboard : Board) -> Image:
+def render_board(cboard : Board, bsel : str) -> Image:
     """ [render_board(cboard)] renders an entire chess board. """
     global assets
-    res = assets["board"].copy()
+    res = ""
+    if bsel == "asl":
+        print("asl in chess")
+        res = assets["basling"].copy()
+    else:
+        # print(bsel)
+        res = assets["board"].copy()
     for i in range(8):
         for j in range(8):
             if cboard[i][j] != '  ':
