@@ -1,10 +1,9 @@
-import discord,asyncio,io,random,re,requests,aiohttp,html
+import discord,asyncio,io,random,re,requests,aiohttp,html,pickle
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from bs4 import BeautifulSoup
-# import cv2
 from discord.ext import commands
-from stitchtest import *
+# from sklearn import svm
 
 class Fun(commands.Cog):
     def __init__(self, client):
@@ -12,6 +11,8 @@ class Fun(commands.Cog):
         self.party = {}
         self.day = {}
         self.hglock = {}
+        # with open("modeldata.p",'rb') as file:
+        #     self.modeldata = pickle.load(file)
 
     def owner_only():
         def is_owner(ctx):
@@ -672,6 +673,96 @@ class Fun(commands.Cog):
                     return
                 else:
                     await ctx.send(title,file=discord.File(io.BytesIO(await resp.read()),fn))
+
+    # @commands.command(name="imitate",pass_context=True)
+    # async def imitate(self,ctx,author : int, *, prompt):
+    #     combined = []
+    #     for channel in server.text_channels:
+    #         if channel.name != "bot-testing":
+    #             print("On Channel "+channel.name)
+    #             cdict = []
+    #             async for msg in channel.history(limit=50000000000,oldest_first=True):
+    #                 if len(msg.content) == 0 or msg.content[0] != "!":
+    #                     cdict += [{"user":msg.author.id,"msg":msg.content}]
+    #                     i = i + 1
+    #             combined = combined + cdict
+    #     await ctx.send("Compiled training dataset; " + i + " messages.")
+    #     byauthor = {}
+    #     for i in range(len(combined)):
+    #         msg = combined[i]
+    #         if i == 0:
+    #             pass
+    #         else:
+    #             if not msg["user"] in byauthor.keys():
+    #                 byauthor[msg['user']] = {"prev":[],"r1":[],"r2":[],"r3":[]}
+                
+    #             x = combined[i-1]['msg'].lower().split(' ')
+    #             nx = []
+    #             ny = []
+    #             for g in range(len(x)):
+    #                 w = regex.sub('',x[g])
+    #                 if not w in words:
+    #                     words.append(regex.sub('',x[g]))
+    #                 nx.append(words.index(w))
+    #             y = msg['msg'].lower().split(' ')
+    #             for g in range(len(y)):
+    #                 w = regex.sub('',y[g])
+    #                 if not w in words:
+    #                     words.append(regex.sub('',y[g]))
+    #                 ny.append(words.index(w))
+    #             while len(nx) < 5:
+    #                 nx = nx + [-1]
+    #             nx = nx[:5]
+    #             while len(ny) < 3:
+    #                 ny = ny + [-1]
+    #             ny = ny[:3]
+    #             byauthor[msg['user']]['prev'].append(nx)
+    #             byauthor[msg['user']]['r1'].append(ny[0])
+    #             byauthor[msg['user']]['r2'].append(ny[1])
+    #             byauthor[msg['user']]['r3'].append(ny[2])
+
+    #     await ctx.send("Processed data")
+
+    #     author = ctx.author.id
+    #     proto_x = np.array(byauthor[author]['prev'])
+    #     y1      = np.array(byauthor[author]['r1'])
+    #     y2      = np.array(byauthor[author]['r2'])
+    #     y3      = np.array(byauthor[author]['r3'])
+    #     # print(proto_x.shape)
+    #     # print(y.shape)
+
+    #     model1 = svm.SVR()
+    #     model2 = svm.SVR()
+    #     model3 = svm.SVR()
+
+    #     model1.fit(proto_x,y1)
+    #     await ctx.send("model 1 trained")
+    #     model2.fit(proto_x,y2)
+    #     await ctx.send("model 2 trained")
+    #     model3.fit(proto_x,y3)
+    #     await ctx.send("model 3 trained")
+
+    #     pred = input("Prediction > ")
+    #     pred = pred.lower().split(' ')
+    #     num = len(pred)
+    #     predx = []
+
+    #     for g in range(len(pred)):
+    #         w = regex.sub('',pred[g])
+    #         if w in words:
+    #             predx.append(words.index(w))
+    #         else:
+    #             predx.append(-1)
+
+    #     while len(predx) < 5:
+    #         predx.append(-1)
+    #     predx = np.array(predx[:5])
+
+    #     pred1 = model1.predict([predx])
+    #     pred2 = model2.predict([predx])
+    #     pred3 = model3.predict([predx])
+
+    #     await ctx.send(words[int(pred1)] + " " + words[int(pred2)] + " " + words[int(pred3)])
 
 def setup(client):
     client.add_cog(Fun(client))
