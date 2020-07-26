@@ -126,7 +126,7 @@ class Fun(commands.Cog):
         query = term.replace(' ','+')
         url = 'https://www.google.com.sg/search?q={}&tbm=isch&tbs=sbd:0'.format(query)
         req = requests.get(url,headers=headers)
-        urllist = [n for n in re.findall('"ou":"([a-zA-Z0-9_./:-]+.(?:jpg|jpeg|png))",', req.text)]
+        urllist = [n for n in re.findall('"(http[a-zA-Z0-9_./:-]+.(?:jpg|jpeg|png))",', req.text)]
         for i in range(num):
             url = urllist[i]
             fn = url.split("/")[-1]
