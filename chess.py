@@ -128,6 +128,7 @@ def move_piece(cboard : Board, move : str) -> Board:
     """ [move_piece(cboard,move)] executes the move [move] on [board], and returns the
         resulting board. 
         TODO: ADD SUPPORT FOR SPECIAL MOVES LIKE EN-PASSANT, CASTLING, ETC. """
+    print(move)
     brd = bcopy(cboard)
     starty = int(move[1])
     startx = int(move[2])
@@ -165,12 +166,11 @@ def move_piece(cboard : Board, move : str) -> Board:
         brd[int(move[7])][int(move[8])]  = '  '
         # brd = move_piece(brd, "S"+move[7:]) # Move the rook
     # Upgrade pawns to queens
-    for i in range(8):
-        for j in range(8):
-            if i == 0 and brd[i][j][0] == "W":
-                brd[i][j] == "WQ"
-            if i == 7 and brd[i][j][0] == "B":
-                brd[i][j] == "BQ"
+    for j in range(8):
+        if brd[0][j] == "WP":
+            brd[0][j] = "WQ"
+        if brd[7][j] == "BP":
+            brd[7][j] = "BQ"
     return brd
 
 # ################ #
@@ -503,3 +503,8 @@ def render_board(cboard : Board, bsel : str) -> Image:
             if cboard[i][j] != '  ':
                 insert_image(i,j,res,assets[cboard[i][j].lower()])
     return Image.fromarray(res)
+
+def pretty_print_board(cboard : Board):
+    """ [pretty_print_board(cboard)] pretty-prints a board in the console."""
+    for i in cboard:
+        print(i)
