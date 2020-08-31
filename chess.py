@@ -4,6 +4,7 @@ from random import randint
 from math import ceil
 # Used for type enforcement
 from typing import List
+import os
 
 # A Board is a list of 8 string lists, which have an 'X' every
 # other entry making a checkerboard.  In the spaces between Xs, there
@@ -19,7 +20,6 @@ Board = List[List[str]]
 
 assets = {
     "board"   : np.array(Image.open("./chess/board.png"))[:,:,:3],
-    "basling" : np.array(Image.open("./chess/basling.png"))[:,:,:3],
     "wt"      : np.array(Image.open("./chess/wt.png"))[:,:,:4],
     "wq"      : np.array(Image.open("./chess/wq.png"))[:,:,:4],
     "wb"      : np.array(Image.open("./chess/wb.png"))[:,:,:4],
@@ -33,6 +33,11 @@ assets = {
     "br"      : np.array(Image.open("./chess/br.png"))[:,:,:4],
     "bp"      : np.array(Image.open("./chess/bp.png"))[:,:,:4]
     }
+
+basl = False
+if os.path.exists("./chess/basling.png"):
+    assets['basling'] = np.array(Image.open("./chess/basling.png"))[:,:,:3]
+    basl = True
 
 # This is the standard opening chessboard.
 # K is knight, T is unmoved king, t is moved king (relevant for castling), R is for unmoved rook, r is moved rook
@@ -492,7 +497,7 @@ def render_board(cboard : Board, bsel : str) -> Image:
     """ [render_board(cboard)] renders an entire chess board. """
     global assets
     res = ""
-    if bsel == "asl":
+    if bsel == "asl" and basl:
         print("asl in chess")
         res = assets["basling"].copy()
     else:
