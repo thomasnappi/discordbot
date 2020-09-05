@@ -215,7 +215,7 @@ class Utilities(commands.Cog):
             await sent.add_reaction('👍')
             await sent.add_reaction('👎')
         else:
-            nums = ['1️','2️','3️','4️','5️','6️','7️','8️','9️']
+            nums = ['one','two','three','four','five','six','seven','eight','nine']
             for i in range(options):
                 await sent.add_reaction(nums[i])
 
