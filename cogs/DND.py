@@ -61,8 +61,8 @@ class DND(commands.Cog):
         for i in div.find_all("p"):
             string = "{0}{1}\n".format(string,i.text)
         rellines = string.split("\n")
-        rellines.insert(0,"**{}**".format(div.find("h1").text))
-        rellines[1] = "*{}*".format(rellines[1])
+        rellines.insert(0,"**{}**".format(div.find("h1").text.strip()))
+        rellines[1] = "*{}*".format(rellines[1].strip())
         while len(rellines) > 0:
             ts = rellines.pop(0)
             for i in range(len(rellines)):
