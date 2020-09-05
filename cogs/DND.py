@@ -56,7 +56,7 @@ class DND(commands.Cog):
         headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36' }
         url = "https://5thsrd.org/spellcasting/spells/{}/".format("_".join(spell.lower().split(" ")))
         req = requests.get(url,headers=headers)
-        div = BeautifulSoup(req.text,"html.parser").find("div",role="main")
+        div = BeautifulSoup(req.text,"html.parser").find("div",_class="l-box")
         string = ""
         for i in div.find_all("p"):
             string = "{0}{1}\n".format(string,i.text)
