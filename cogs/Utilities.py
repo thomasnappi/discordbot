@@ -200,7 +200,7 @@ class Utilities(commands.Cog):
     @commands.command(name="poll", pass_context=True)
     @commands.guild_only()
     @admin_only()
-    async def poll(self, ctx, channel : discord.Channel, options : int, *, prompt : str):
+    async def poll(self, ctx, channel : discord.TextChannel, options : int, *, prompt : str):
         """ Create a poll in the given channel with the specified number of options.  1 is thumbs up, 2 is thumbs up and thumbs down, 3-9 are numbers."""
         if options < 1:
             await ctx.send("You can't create a poll with less than one option!")
