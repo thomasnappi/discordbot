@@ -210,12 +210,12 @@ class Utilities(commands.Cog):
             return
         sent = await channel.send(prompt)
         if options == 1:
-            await sent.add_reaction('thumbsup')
+            await sent.add_reaction('👍')
         elif options == 2:
-            await sent.add_reaction('thumbsup')
-            await sent.add_reaction('thumbsdown')
+            await sent.add_reaction('👍')
+            await sent.add_reaction('👎')
         else:
-            nums = ['one','two','three','four','five','six','seven','eight','nine']
+            nums = ['1️','2️','3️','4️','5️','6️','7️','8️','9️']
             for i in range(options):
                 await sent.add_reaction(nums[i])
 
