@@ -13,6 +13,11 @@ class Utilities(commands.Cog):
         # role = member.guild.get_role(640767364459266070)
         # await member.add_roles(role)
 
+    def admin_only():
+        def is_admin(ctx):
+            return ctx.author.permissions_in(ctx.channel).administrator
+        return commands.check(is_admin)
+
     @commands.command(name="sslink",aliases=["ssl","screenshare","vclink"],pass_context=True)
     async def sslink(self,ctx):
         """Displays the screenshare link for your current VC."""
@@ -24,11 +29,9 @@ class Utilities(commands.Cog):
 
     @commands.command(name="rolelist",pass_context=True)
     @commands.guild_only()
+    @admin_only()
     async def rolelist(self,ctx,member: discord.Member = None):
         """Displays all roles in a server, or the roles of a given member."""
-        if not ctx.author.permissions_in(ctx.channel).administrator:
-            await ctx.author.send("You must be an administrator to use `rolelist`.")
-            return
         sv = ctx.guild
         roles = ""
         if member == None:
@@ -46,11 +49,9 @@ class Utilities(commands.Cog):
 
     @commands.command(name="whohas",pass_context=True)
     @commands.guild_only()
+    @admin_only()
     async def whohas(self,ctx,*,rname):
         """Displays users who have the listed role (by name)."""
-        if not ctx.author.permissions_in(ctx.channel).administrator:
-            await ctx.author.send("You must be an administrator to use `whohas`.")
-            return
         sv = ctx.guild
         role = discord.utils.get(sv.roles,name=rname)
         if role == None:
@@ -110,9 +111,6 @@ class Utilities(commands.Cog):
     @commands.guild_only()
     async def whois(self,ctx,member: discord.Member):
         """Displays info about the given member."""
-        if not (ctx.author.permissions_in(ctx.channel).kick_members or ctx.author.permissions_in(ctx.channel).ban_members):
-            await ctx.author.send("You have insufficient permissions to use `whois`.")
-            return
         sv = ctx.guild
         name = member.name+"#"+member.discriminator
         emb = discord.Embed(title=name,description=member.mention)
@@ -131,20 +129,16 @@ class Utilities(commands.Cog):
 
     @commands.command(name="purge",aliases=["delete"],pass_context=True)
     @commands.guild_only()
+    @admin_only()
     async def purge(self,ctx,num):
         """Deletes the last number messages"""
-        if not ctx.author.permissions_in(ctx.channel).administrator:
-            await ctx.author.send("You must be an administrator to use `purge`.")
-            return
         await ctx.channel.purge(limit=int(num)+1)
 
     @commands.command(name="addrole",pass_context=True)
     @commands.guild_only()
+    @admin_only()
     async def addrole(self,ctx,member: discord.Member,*,rname: str):
         """Add role for given member"""
-        if not ctx.author.permissions_in(ctx.channel).administrator:
-            await ctx.author.send("You must be an administrator to use `addrole`.")
-            return
         sv = ctx.guild
         if rname == None:
             await ctx.send("role name not specified.")
@@ -162,11 +156,9 @@ class Utilities(commands.Cog):
             return
     @commands.command(name="remrole",aliases=["removerole"],pass_context=True)
     @commands.guild_only()
+    @admin_only()
     async def remrole(self,ctx,member: discord.Member,*,rname: str):
         """Remove role, for given member"""
-        if not ctx.author.permissions_in(ctx.channel).administrator:
-            await ctx.author.send("You must be an administrator to use `remrole`.")
-            return
         sv = ctx.guild
         if rname == None:
             await ctx.send("role name not specified.")
@@ -187,11 +179,9 @@ class Utilities(commands.Cog):
             return
     @commands.command(name="checkrole",pass_context=True)
     @commands.guild_only()
+    @admin_only()
     async def checkrole(self,ctx,member: discord.Member,*,rname: str):
         """Check if a given member has a role"""
-        if not ctx.author.permissions_in(ctx.channel).administrator:
-            await ctx.author.send("You must be an administrator to use `checkrole`.")
-            return
         sv = ctx.guild
         if rname == None:
             await ctx.send("role name not specified.")
@@ -206,6 +196,28 @@ class Utilities(commands.Cog):
         else:
             await ctx.send("User {0} does not have the role {1}".format(member.name+"#"+member.discriminator,role.name))
             return
+
+    @commands.command(name="poll", pass_context=True)
+    @commands.guild_only()
+    @admin_only()
+    async def poll(self, ctx, channel : discord.Channel, options : int, *, prompt : str):
+        """ Create a poll in the given channel with the specified number of options.  1 is thumbs up, 2 is thumbs up and thumbs down, 3-9 are numbers."""
+        if options < 1:
+            await ctx.send("You can't create a poll with less than one option!")
+            return
+        elif options > 9:
+            await ctx.send("You can't create a poll with more than 9 options!")
+            return
+        sent = await channel.send(prompt)
+        if options == 1:
+            sent.add_reaction('thumbsup')
+        elif options == 2:
+            sent.add_reaction('thumbsup')
+            sent.add_reaction('thumbsdown')
+        else:
+            nums = ['one','two','three','four','five','six','seven','eight','nine']
+            for i in range(options):
+                sent.add_reaction(nums[i])
 
 def setup(client):
     client.add_cog(Utilities(client))
