@@ -63,6 +63,11 @@ class Lof(commands.Cog):
                 read_hand += print_card(c) + "\n"
             await usr.send("The game in {0} has started!  Your hand is:```\n{1}```".format(ctx.channel.name, read_hand))
         await ctx.send("It is {0}'s turn!  The top card is ***{1}***".format(self.client.get_user(g["order"][0]).mention, print_card(g['top'])))
+        order = ''
+        for p in g['order']:
+            usr = self.client.get_user(p)
+            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
+        await ctx.send("The order of play is:\n```"+order+"```")
         g["state"] = "in_progress"
 
     @commands.command(name='lplay', pass_context=True)
