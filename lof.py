@@ -9,8 +9,8 @@ def get_card():
     return card
 
 def print_card(c):
-    if card['value'] == 'wildcard' or card['value'] == 'draw4':
-        return card['value']
+    if c['value'] == 'wildcard' or c['value'] == 'draw4':
+        return c['value']
     return c["color"] + " " + c["value"]
 
 def get_card_of_hand(card, hand):
