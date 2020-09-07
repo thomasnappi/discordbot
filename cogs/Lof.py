@@ -54,6 +54,9 @@ class Lof(commands.Cog):
                 "state"  : "unstarted"
             }
         g = self.games[ctx.channel.id]
+        if len(g['players'].keys()) < 2:
+            await ctx.send("A game must have at least two people to start")
+            return
         g["order"] = random.sample(g["players"].keys(),len(g["players"].keys()))
         for p in g["order"]:
             usr = self.client.get_user(p)
