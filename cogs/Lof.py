@@ -118,7 +118,7 @@ class Lof(commands.Cog):
             order = ''
             for p in g['order']:
                 usr = self.client.get_user(p)
-                order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + "cards\n"
+                order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
             await ctx.send("The order of play is:\n```"+order+"```")
         for p in g["order"]:
             usr = self.client.get_user(p)
@@ -147,7 +147,7 @@ class Lof(commands.Cog):
         order = ''
         for p in g['order']:
             usr = self.client.get_user(p)
-            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + "cards\n"
+            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
         await ctx.send("The order of play is:\n```"+order+"```")
         for p in g["order"]:
             usr = self.client.get_user(p)
@@ -166,7 +166,7 @@ class Lof(commands.Cog):
         order = ''
         for p in g['order']:
             usr = self.client.get_user(p)
-            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + len(g['players'][p]) + "cards\n"
+            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
         await ctx.send("The order of play is:\n```"+order+"```")
 
     @commands.command(name='lrules', pass_context=True)
