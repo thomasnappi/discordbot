@@ -9,6 +9,8 @@ def get_card():
     return card
 
 def print_card(c):
+    if card['value'] == 'wildcard' or card['value'] == 'draw4':
+        return card['value']
     return c["color"] + " " + c["value"]
 
 def get_card_of_hand(card, hand):
@@ -25,3 +27,28 @@ def remove_card_from_hand(card, hand):
 
 def can_play_over(card, top):
     return card['color'] == top['color'] or card['value'] == top['value'] or card['value'] == 'draw4' or card['value'] == 'wildcard' or top['value'] == 'wildcard' or top['value'] == 'draw4'
+
+def hand_sort_func(j):
+    val = 0
+    if j['color'] == 'red':
+        val = 100
+    elif j['color'] == 'blue':
+        val = 200
+    elif j['color'] == 'green':
+        val = 300
+    else:
+        val = 400
+    try:
+        val += int(j['value'])
+    except:
+        if j['value'] == 'draw2':
+            val += 10
+        elif j['value'] == 'draw4':
+            val += 20
+        else:
+            val += 300
+    return val
+
+def sort_hand(hand){
+    hand.sort(key=hand_sort_func)
+}

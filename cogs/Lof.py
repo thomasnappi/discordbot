@@ -57,6 +57,7 @@ class Lof(commands.Cog):
         g["order"] = random.sample(g["players"].keys(),len(g["players"].keys()))
         for p in g["order"]:
             usr = self.client.get_user(p)
+            sort_hand(g["players"][p])
             read_hand = ""
             for c in g["players"][p]:
                 read_hand += print_card(c) + "\n"
@@ -114,8 +115,14 @@ class Lof(commands.Cog):
             return
         else:
             await ctx.send("The top card is now ***{0}***.  It is {1}'s turn.".format(print_card(g['top']),self.client.get_user(g["order"][0]).mention))
+            order = ''
+            for p in g['order']:
+                usr = self.client.get_user(p)
+                order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + len(g['players'][p]) + "cards\n"
+            await ctx.send("The order of play is:\n```"+order+"```")
         for p in g["order"]:
             usr = self.client.get_user(p)
+            sort_hand(g["players"][p])
             read_hand = ""
             for c in g["players"][p]:
                 read_hand += print_card(c) + "\n"
@@ -137,8 +144,14 @@ class Lof(commands.Cog):
         g['players'][ctx.author.id].append(get_card())
         g['order'].append(g['order'].pop(0))
         await ctx.send("It is now {0}'s turn.  The top card is still ***{1}***".format(self.client.get_user(g["order"][0]).mention, print_card(g['top'])))
+        order = ''
+        for p in g['order']:
+            usr = self.client.get_user(p)
+            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + len(g['players'][p]) + "cards\n"
+        await ctx.send("The order of play is:\n```"+order+"```")
         for p in g["order"]:
             usr = self.client.get_user(p)
+            sort_hand(g["players"][p])
             read_hand = ""
             for c in g["players"][p]:
                 read_hand += print_card(c) + "\n"
@@ -153,7 +166,7 @@ class Lof(commands.Cog):
         order = ''
         for p in g['order']:
             usr = self.client.get_user(p)
-            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ")\n"
+            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + len(g['players'][p]) + "cards\n"
         await ctx.send("The order of play is:\n```"+order+"```")
 
     @commands.command(name='lrules', pass_context=True)
