@@ -49,6 +49,5 @@ def hand_sort_func(j):
             val += 300
     return val
 
-def sort_hand(hand){
+def sort_hand(hand):
     hand.sort(key=hand_sort_func)
-}
