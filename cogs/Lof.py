@@ -167,6 +167,7 @@ class Lof(commands.Cog):
 
     @commands.command(name='lorder', pass_context=True)
     async def order(self, ctx):
+        """Print the order of play, and how many cards each player has."""
         if not ctx.channel.id in self.games.keys() or self.games[ctx.channel.id]['state'] != 'in_progress':
             await ctx.send("There is no game in progress!")
             return
@@ -185,6 +186,7 @@ class Lof(commands.Cog):
     @commands.command(name='lreset', pass_context=True)
     @admin_only()
     async def override(self, ctx):
+        """Forcibly end the current game in a channel."""
         self.games[ctx.channel.id] = {
             "players": {},
             "order"  : [],

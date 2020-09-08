@@ -36,6 +36,7 @@ class Music(commands.Cog):
 
     @commands.command(name="play")
     async def play(self,ctx,*,title):
+        """Play a song in your current voice channel.  If there are songs playing or queued, it will be added to the queue."""
         voice = ctx.guild.voice_client
         vc = ctx.message.author.voice.channel
         if vc == None:
@@ -78,6 +79,7 @@ class Music(commands.Cog):
 
     @commands.command(name="leave")
     async def leave(self,ctx):
+        """Make the bot leave a voice channel."""
         voice = ctx.guild.voice_client
         if voice == None or not voice.is_connected():
             await ctx.send("Not in a voice channel!")
@@ -87,6 +89,7 @@ class Music(commands.Cog):
 
     @commands.command(name="join")
     async def join(self,ctx):
+        """Make the bot join a voice channel."""
         voice = ctx.guild.voice_client
         vc = ctx.message.author.voice.channel
         if vc == None:
@@ -98,6 +101,7 @@ class Music(commands.Cog):
 
     @commands.command(name="pause")
     async def pause(self,ctx):
+        """Pause the music playback."""
         voice = ctx.guild.voice_client
         if voice == None or not voice.is_playing():
             await ctx.send("Nothing playing!")
@@ -106,6 +110,7 @@ class Music(commands.Cog):
     
     @commands.command(name="resume")
     async def resume(self,ctx):
+        """Resume the music playback."""
         voice = ctx.guild.voice_client
         if voice == None or not voice.is_paused():
             await ctx.send("Nothing playing!")
@@ -114,6 +119,7 @@ class Music(commands.Cog):
 
     @commands.command(name="queue")
     async def queue_(self,ctx):
+        """Print the queue of songs."""
         voice = ctx.guild.voice_client
         if not ctx.guild.id in self.queue.keys() or self.queue[ctx.guild.id] == []:
             await ctx.send("No songs queued!")
@@ -130,6 +136,7 @@ class Music(commands.Cog):
 
     @commands.command(name="skip")
     async def skip(self,ctx):
+        """Skip the current song."""
         voice = ctx.guild.voice_client
         if voice == None or not voice.is_connected or not voice.is_playing():
             await ctx.send("Not playing!")
@@ -140,6 +147,7 @@ class Music(commands.Cog):
     
     @commands.command(name="skipall")
     async def skipall(self,ctx):
+        """Skip the current song, and clear the queue."""
         voice = ctx.guild.voice_client
         if voice == None or not voice.is_connected or not voice.is_playing():
             await ctx.send("Not playing!")
@@ -150,6 +158,7 @@ class Music(commands.Cog):
     
     @commands.command(name="song")
     async def song(self,ctx):
+        """Print the currently playing song."""
         if ctx.guild.id in self.np.keys() and self.np[ctx.guild.id] != None:
             await ctx.send("*Now playing:* **{}**".format(self.np[ctx.guild.id].title))
         else:

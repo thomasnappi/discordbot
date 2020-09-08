@@ -17,11 +17,13 @@ class Maintenance(commands.Cog):
     @commands.command(name="stop",aliases=["quit"],pass_context=True)
     @owner_only()
     async def stop(self,ctx):
+        """Terminate the bot process, immediately.  Must be manually restarted on server side."""
         sys.exit(0)
 
     @commands.command(name="listmodules",aliases=["listcogs","lcogs"],pass_context=True)
     @owner_only()
     async def listmodules(self,ctx):
+        """List all loaded cogs."""
         exts = "Loaded extensions:"
         for i in self.client.extensions.keys():
             exts = exts + " " + i
@@ -30,6 +32,7 @@ class Maintenance(commands.Cog):
     @commands.command(name="reloadmodule",aliases=["reload","rlcog"],pass_context=True)
     @owner_only()
     async def reloadmodule(self,ctx,module:str):
+        """Reload a cog."""
         if not "cogs.{}".format(module) in self.client.extensions.keys():
             await ctx.send("Unrecognized module.")
             return
@@ -169,7 +172,7 @@ class Maintenance(commands.Cog):
     @commands.command(name="rach",aliases=["readallch","readallchannels","rallc"],pass_context=True)
     @owner_only()
     async def rach(self,ctx,gid:int):
-        """Read all channels and channel categories in a server."""
+        """Read all channel names and channel categories in a server."""
         server = self.client.get_guild(gid)
         if server == None:
             await ctx.send("Server not found.")
@@ -188,6 +191,7 @@ class Maintenance(commands.Cog):
     @commands.command(name="rch",aliases=["readch","readchannel","readmessages"],pass_context=True)
     @owner_only()
     async def rch(self,ctx,gid:int,channel:str,lim:int,isname:bool=True):
+        """Read the last lim messages in a channel in a server. isname determinres if the channel is by name or by id."""
         sv = self.client.get_guild(gid)
         if sv == None:
             await ctx.send("Server not found.")
@@ -215,6 +219,7 @@ class Maintenance(commands.Cog):
     @commands.command(name="rdm",aliases=["readdm"],pass_context=True)
     @owner_only()
     async def rdm(self,ctx,user:discord.User,lim:int):
+        """Read from the DMs with a specific user."""
         try:
             msgs = await user.history(limit=lim).flatten()
             msgs.reverse()

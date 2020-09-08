@@ -36,6 +36,7 @@ class Fun(commands.Cog):
 
     @commands.command()
     async def retcon(self,ctx):
+        """Make me change my decision on whether or not you were right."""
         async for message in ctx.history(limit=20):
             cont = message.content
             if cont == "No, you're wrong." and message.author.id == self.client.user.id:
