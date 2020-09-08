@@ -1,4 +1,4 @@
-import discord,asyncio,sys
+import discord,asyncio,sys,os
 from discord.ext import commands
 
 class Maintenance(commands.Cog):
@@ -227,6 +227,13 @@ class Maintenance(commands.Cog):
                 await ctx.send("{0.author.name}: {0.content}".format(msg))
         except:
             await ctx.send("Unable to read messages from that user.")
+
+    @commands.command(name='gpull', pass_context=True)
+    @owner_only()
+    async def gpull(self, ctx):
+        """Performs a git pull in the bot's directory."""
+        os.system("git pull")
+        await ctx.send("Pulled.  Reload relevant modules.")
 
 def setup(client):
     client.add_cog(Maintenance(client))
