@@ -69,7 +69,10 @@ class Lof(commands.Cog):
         order = ''
         for p in g['order']:
             usr = self.client.get_user(p)
-            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
+            if ctx.channel.type == discord.ChannelType.text:
+                order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
+            else:
+                order += usr.name + "#" + usr.discriminator + " with " + str(len(g['players'][p])) + " cards\n"
         await ctx.send("The order of play is:\n```"+order+"```")
         g["state"] = "in_progress"
 
@@ -126,7 +129,10 @@ class Lof(commands.Cog):
             order = ''
             for p in g['order']:
                 usr = self.client.get_user(p)
-                order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
+                if ctx.channel.type == discord.ChannelType.text:
+                    order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
+                else:
+                    order += usr.name + "#" + usr.discriminator + " with " + str(len(g['players'][p])) + " cards\n"
             await ctx.send("The order of play is:\n```"+order+"```")
         for p in g["order"]:
             usr = self.client.get_user(p)
@@ -155,7 +161,10 @@ class Lof(commands.Cog):
         order = ''
         for p in g['order']:
             usr = self.client.get_user(p)
-            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
+            if ctx.channel.type == discord.ChannelType.text:
+                order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
+            else:
+                order += usr.name + "#" + usr.discriminator + " with " + str(len(g['players'][p])) + " cards\n"
         await ctx.send("The order of play is:\n```"+order+"```")
         for p in g["order"]:
             usr = self.client.get_user(p)
@@ -175,7 +184,10 @@ class Lof(commands.Cog):
         order = ''
         for p in g['order']:
             usr = self.client.get_user(p)
-            order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
+            if ctx.channel.type == discord.ChannelType.text:
+                order += ctx.guild.get_member(p).nick + " (" + usr.name + "#" + usr.discriminator + ") with " + str(len(g['players'][p])) + " cards\n"
+            else:
+                order += usr.name + "#" + usr.discriminator + " with " + str(len(g['players'][p])) + " cards\n"
         await ctx.send("The order of play is:\n```"+order+"```")
 
     @commands.command(name='lrules', pass_context=True)
