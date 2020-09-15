@@ -227,7 +227,7 @@ class Utilities(commands.Cog):
     @commands.command(name='benc', pass_context=True)
     async def benc(self, ctx, string : str):
         """Converts a string to binary using UTF-8."""
-        await ctx.send(str(string.encode("utf-8"))
+        await ctx.send(str(string.encode("utf-8")))
 
 def setup(client):
     client.add_cog(Utilities(client))
