@@ -219,5 +219,15 @@ class Utilities(commands.Cog):
             for i in range(options):
                 await sent.add_reaction(nums[i])
 
+    @commands.command(name='bdec', pass_context=True)
+    async def bdec(self, ctx, binary : str):
+        """Converts a UTF-8 binary string to text."""
+        await ctx.send(binary.decode('utf-8'))
+    
+    @commands.command(name='benc', pass_context=True)
+    async def benc(self, ctx, string : str):
+        """Converts a string to binary using UTF-8."""
+        await ctx.send(str(string.encode("utf-8"))
+
 def setup(client):
     client.add_cog(Utilities(client))
