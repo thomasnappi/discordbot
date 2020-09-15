@@ -11,7 +11,7 @@ status = "Type !!help for help"
 client = commands.Bot(command_prefix=prefix)
 
 
-cogs = ["cogs.Utilities","cogs.DND","cogs.Maintenance","cogs.Fun","cogs.Music","cogs.Activity","cogs.Annoying","cogs.Chess","cogs.Lof"]
+cogs = ["cogs.Utilities","cogs.DND","cogs.Maintenance","cogs.Fun","cogs.Activity","cogs.Annoying","cogs.Chess","cogs.Lof"]#,"cogs.Music"
 
 if __name__ == '__main__':
     for cog in cogs:

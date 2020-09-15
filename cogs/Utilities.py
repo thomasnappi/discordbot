@@ -1,4 +1,4 @@
-import discord,asyncio
+import discord,asyncio, struct
 from discord.ext import commands
 
 class Utilities(commands.Cog):
@@ -222,13 +222,28 @@ class Utilities(commands.Cog):
     @commands.command(name='bdec', pass_context=True)
     async def bdec(self, ctx, binary : str):
         """Converts a UTF-8 binary string to text."""
-        await ctx.send(binary.decode('utf-8'))
+        arr = [binary[i:i+8] for i in range(0, len(binary), 8)]
+        ret = ''
+        for i in range(len(arr)):
+            bstr = arr[i]
+            bsum = 0
+            for j in range(len(bstr)):
+                bsum += int(bstr[j]) * (2 ** (7-j))
+            ret += chr(bsum)
+        await ctx.send(ret)
     
     @commands.command(name='benc', pass_context=True)
-    async def benc(self, ctx, string : str):
+    async def benc(self, ctx, *, string : str):
         """Converts a string to binary using UTF-8."""
-        # Credit to https://stackoverflow.com/a/18815890, because I had issues figuring it out.
-        await ctx.send(''.join(format(ord(x), 'b') for x in string))
+        ret = ''
+        for i in range(len(string)):
+            print(i)
+            char = string[i]
+            rs = format(ord(char), 'b')
+            while len(rs) < 8:
+                rs = '0' + rs
+            ret += rs
+        await ctx.send(ret)
 
 def setup(client):
     client.add_cog(Utilities(client))
